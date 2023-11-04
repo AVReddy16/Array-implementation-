@@ -1,0 +1,70 @@
+#include <iostream>
+#include <vector>
+
+class SparseMatrix {
+private:
+    int rows, cols;
+    std::vector<std::tuple<int, int, int>> elements; // (row, column, value) tuples
+
+public:
+    SparseMatrix(int rows, int cols) : rows(rows), cols(cols) {
+        // Initialize the sparse matrix with all elements set to zero.
+        elements.clear();
+    }
+
+    void setElement(int row, int col, int value) {
+        if (row < 0 || row >= rows || col < 0 || col >= cols) {
+            std::cerr << "Invalid row or column index." << std::endl;
+            return;
+        }
+
+        // If the value is zero, remove the element if it exists.
+        if (value == 0) {
+            removeElement(row, col);
+        } else {
+            elements.emplace_back(row, col, value);
+        }
+    }
+
+    int getElement(int row, int col) {
+        for (const auto& element : elements) {
+            if (std::get<0>(element) == row && std::get<1>(element) == col) {
+                return std::get<2>(element);
+            }
+        }
+        return 0; // Return 0 for elements not explicitly set.
+    }
+
+    void removeElement(int row, int col) {
+        for (auto it = elements.begin(); it != elements.end(); ++it) {
+            if (std::get<0>(*it) == row && std::get<1>(*it) == col) {
+                elements.erase(it);
+                return;
+            }
+        }
+    }
+
+    void printMatrix() {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                std::cout << getElement(i, j) << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
+};
+
+int main() {
+    SparseMatrix sparse(5, 5);
+
+    sparse.setElement(0, 0, 1);
+    sparse.setElement(1, 1, 2);
+    sparse.setElement(2, 2, 3);
+    sparse.setElement(3, 3, 4);
+    sparse.setElement(4, 4, 5);
+
+    std::cout << "Sparse Matrix:" << std::endl;
+    sparse.printMatrix();
+
+    return 0;
+}
